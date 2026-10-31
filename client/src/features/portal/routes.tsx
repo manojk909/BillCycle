@@ -1,9 +1,15 @@
 import type { RouteObject } from 'react-router-dom'
-import { ComingSoon } from '@/components/ComingSoon'
+import { MySubscriptionsPage } from './pages/MySubscriptionsPage'
+import { MySubscriptionPage } from './pages/MySubscriptionPage'
+import { MyInvoicesPage } from './pages/MyInvoicesPage'
+import { MyInvoicePage } from './pages/MyInvoicePage'
+import { ProfilePage } from './pages/ProfilePage'
 
-// Replace the placeholders with real pages. Paths are relative to /my.
+// Paths are relative to /my (customers only).
 export const portalRoutes: RouteObject[] = [
-  { path: 'subscriptions', element: <ComingSoon title="My subscriptions" owner="Manoj" task="M13" /> },
-  { path: 'invoices', element: <ComingSoon title="My invoices" owner="Manoj" task="M13" /> },
-  { path: 'profile', element: <ComingSoon title="My profile" owner="Manoj" task="M13" /> },
+  { path: 'subscriptions', element: <MySubscriptionsPage /> },
+  { path: 'subscriptions/:id', element: <MySubscriptionPage /> },
+  { path: 'invoices', element: <MyInvoicesPage /> },
+  { path: 'invoices/:id', element: <MyInvoicePage /> },
+  { path: 'profile', element: <ProfilePage /> },
 ]

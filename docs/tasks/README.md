@@ -2,7 +2,10 @@
 
 Every GitHub issue has a matching spec file here (`<ID>-<slug>.md`). The spec is the **source of truth** for the task. The issue body is a copy of it.
 
+> **TODAY: deadline 17:00, code freeze 16:30.** Build only the MVP slice of your task from [MVP.md](MVP.md) first. Issues labelled `later` wait until the end-to-end story works.
+
 ## If you are an AI assistant helping a team member
+0. Read `docs/tasks/MVP.md` and build only the MVP slice for the task.
 1. Read `AGENTS.md` (authorship rules: **no AI co-author or attribution anywhere**).
 2. Read the task spec the human points you to, then every doc listed under **Read first** in it.
 3. Only create or edit files listed under **Build** (or clearly inside that module's folders). If you need a change in another member's module or in `server/prisma/schema.prisma`, **stop and tell the human**. They will coordinate it.

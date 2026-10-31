@@ -1,7 +1,10 @@
 import type { RouteObject } from 'react-router-dom'
-import { ComingSoon } from '@/components/ComingSoon'
+import { TemplatesListPage } from './pages/TemplatesListPage'
+import { TemplateFormPage } from './pages/TemplateFormPage'
 
-// Replace the placeholders with real pages. Paths are relative to /app.
+// Paths are relative to /app. Admins and sales staff both manage templates.
 export const templateRoutes: RouteObject[] = [
-  { path: 'templates', element: <ComingSoon title="Quotation templates" owner="Sandhya" task="S6" /> },
+  { path: 'templates', element: <TemplatesListPage /> },
+  { path: 'templates/new', element: <TemplateFormPage /> },
+  { path: 'templates/:id', element: <TemplateFormPage /> },
 ]

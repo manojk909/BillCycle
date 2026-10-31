@@ -43,3 +43,6 @@ subscriptionsRouter.post('/:id/resume', validate(action), controller.resume);
 subscriptionsRouter.post('/:id/renew', validate(action), controller.renew);
 subscriptionsRouter.post('/:id/close', validate(action), controller.close);
 subscriptionsRouter.post('/:id/cancel', validate(action), controller.cancel);
+
+// SK4: generate an invoice for the current period (manual "Create invoice").
+subscriptionsRouter.post('/:id/invoices', validate({ params: idParams }), controller.generateInvoice);

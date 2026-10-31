@@ -1,0 +1,268 @@
+/* Printable A4 invoice. Screen styles simulate the page for preview;
+   @media print strips everything down to the page itself. */
+
+.invoice-print-page {
+  background: #e9e9ec;
+  padding: 24px 0;
+  min-height: 100vh;
+}
+
+.invoice-print {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  padding: 15mm;
+  background: #fff;
+  color: #1a1a1a;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11pt;
+  line-height: 1.4;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+}
+
+.invoice-print * {
+  box-sizing: border-box;
+}
+
+/* ---- Header ---- */
+
+.invoice-print__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  border-bottom: 2px solid #1a1a1a;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.invoice-print__company-name {
+  font-size: 14pt;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.invoice-print__company-address,
+.invoice-print__company-email,
+.invoice-print__company-taxid {
+  margin: 0;
+  color: #444;
+  font-size: 9.5pt;
+}
+
+.invoice-print__meta {
+  text-align: right;
+}
+
+.invoice-print__title {
+  font-size: 18pt;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin: 0 0 4px;
+}
+
+.invoice-print__number {
+  font-size: 11pt;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+.invoice-print__dates p {
+  margin: 0;
+  font-size: 9.5pt;
+  color: #444;
+}
+
+/* ---- Status stamp ----
+   Never color-only: each state also has its own label text and border style
+   so it still reads correctly in black-and-white printing. */
+
+.invoice-print__stamp {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 10px;
+  font-weight: 700;
+  font-size: 10pt;
+  letter-spacing: 1px;
+  border-width: 2px;
+  border-style: solid;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+
+.invoice-print__stamp--paid {
+  color: #1a7a33;
+  border-color: #1a7a33;
+  border-style: solid;
+}
+
+.invoice-print__stamp--draft {
+  color: #555;
+  border-color: #555;
+  border-style: dashed;
+}
+
+.invoice-print__stamp--cancelled {
+  color: #b3261e;
+  border-color: #b3261e;
+  border-style: double;
+  border-width: 4px;
+}
+
+.invoice-print__stamp--confirmed {
+  color: #1a4fa3;
+  border-color: #1a4fa3;
+  border-style: solid;
+}
+
+/* ---- Parties / period ---- */
+
+.invoice-print__parties {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.invoice-print__block-label {
+  font-size: 8.5pt;
+  text-transform: uppercase;
+  color: #777;
+  margin: 0 0 4px;
+  letter-spacing: 0.5px;
+}
+
+.invoice-print__bill-to p,
+.invoice-print__period p {
+  margin: 0;
+  font-size: 10pt;
+}
+
+.invoice-print__period {
+  text-align: right;
+}
+
+/* ---- Lines table ---- */
+
+.invoice-print__lines {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+}
+
+.invoice-print__lines thead {
+  display: table-header-group; /* repeats the header on every printed page */
+}
+
+.invoice-print__lines tr {
+  page-break-inside: avoid;
+}
+
+.invoice-print__lines th,
+.invoice-print__lines td {
+  border-bottom: 1px solid #ddd;
+  padding: 6px 8px;
+  font-size: 9.5pt;
+  text-align: left;
+}
+
+.invoice-print__lines th {
+  border-bottom: 2px solid #1a1a1a;
+  font-weight: 700;
+  background: #f5f5f5;
+}
+
+.invoice-print__lines td.num,
+.invoice-print__lines th.num {
+  text-align: right;
+}
+
+/* ---- Tax breakdown + totals ---- */
+
+.invoice-print__summary {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.invoice-print__tax-breakdown {
+  margin-right: auto;
+  font-size: 9.5pt;
+}
+
+.invoice-print__tax-breakdown table {
+  border-collapse: collapse;
+}
+
+.invoice-print__tax-breakdown td {
+  padding: 2px 10px 2px 0;
+}
+
+.invoice-print__totals {
+  width: 260px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px 14px;
+}
+
+.invoice-print__totals-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10pt;
+  padding: 2px 0;
+}
+
+.invoice-print__totals-row--total {
+  border-top: 2px solid #1a1a1a;
+  margin-top: 6px;
+  padding-top: 6px;
+  font-weight: 700;
+  font-size: 11.5pt;
+}
+
+.invoice-print__totals-row--due {
+  font-weight: 700;
+  color: #b3261e;
+}
+
+/* ---- Footer ---- */
+
+.invoice-print__footer {
+  margin-top: 24px;
+  padding-top: 8px;
+  border-top: 1px solid #ddd;
+  font-size: 8.5pt;
+  color: #777;
+}
+
+/* ---- Print ---- */
+
+@page {
+  size: A4;
+  margin: 15mm;
+}
+
+@media print {
+  .invoice-print-page {
+    background: none;
+    padding: 0;
+    min-height: 0;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .invoice-print {
+    width: auto;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  .invoice-print__lines tr,
+  .invoice-print__summary {
+    page-break-inside: avoid;
+  }
+}

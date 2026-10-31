@@ -22,13 +22,33 @@ docs/     Problem analysis, requirements, domain model, business rules, plan
 ```
 
 ## Getting started
-> Run commands are added once the scaffold (task M1) lands.
+Requires Node 20+ and Docker Desktop.
 
 ```bash
-docker compose up -d                      # PostgreSQL :5432, Mailpit UI http://localhost:8025
-cp server/.env.example server/.env
-cp client/.env.example client/.env
+docker compose up -d                 # PostgreSQL on :5433, Mailpit (emails) UI on http://localhost:8025
+
+cd server
+cp .env.example .env
+npm install
+npx prisma migrate dev               # create tables
+npm run seed                         # demo data
+npm run dev                          # API on http://localhost:4000/api  (health: /api/health)
+
+cd ../client                         # second terminal
+cp .env.example .env
+npm install
+npm run dev                          # app on http://localhost:5173 (proxies /api to :4000)
 ```
+
+Fresh database any time: `cd server && npm run db:reset` (drops, migrates, seeds).
+
+| Login | Email | Password |
+|---|---|---|
+| Admin | admin@billcycle.local | Admin@12345 |
+| Staff | staff@billcycle.local | Staff@12345 |
+| Customer (portal) | customer1@billcycle.local (also 2, 3) | Customer@123 |
+
+Useful: `npm run typecheck`, `npm run lint`, `npm test` (server and client), `npm run db:studio` (browse the DB).
 
 ## Docs
 Start at [docs/README.md](docs/README.md). Contribution rules are in [AGENTS.md](AGENTS.md) and [docs/09-execution-plan.md](docs/09-execution-plan.md#6-git-workflow).

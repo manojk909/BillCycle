@@ -10,44 +10,44 @@ Ownership is by **vertical module**: each person builds both the backend and the
 | **Challa Trivedh Kumar** | `trivedhchalla` | Travelling, so **small, independent, offline-friendly** work: period math, print view, email templates, perf seed, tests | 5 (T1–T5) |
 
 ## Issues
-`#` = GitHub issue number (filled in after the issues are created).
+`#` = GitHub issue. Roadmap / tracking issue: [#35](https://github.com/manojk909/BillCycle/issues/35) (pinned).
 
 | ID | # | Task | Owner | Phase | Depends on |
 |---|---|---|---|---|---|
-| M1 | | Scaffold server and client projects | Manoj | P0 | — |
-| M2 | | Prisma schema, migration, base seed | Manoj | P0 | M1 |
-| M3 | | Server core: errors, validation, pagination, sequences, money/tax, router stubs | Manoj | P0 | M1 |
-| M4 | | Client shell, routing, auth context, UI kit | Manoj | P0 | M1 |
-| M5 | | Auth API: signup, login, logout, me | Manoj | P1 | M2, M3 |
-| M6 | | Forgot / reset password + mailer | Manoj | P1 | M5 |
-| M7 | | RBAC middleware, portal scoping, users | Manoj | P1 | M5, M4 |
-| M8 | | Auth pages | Manoj | P1 | M4, M5, M6 |
-| M9 | | Customers API + UI | Manoj | P1 | M3, M4, M7 |
-| M10 | | Payments API + UI | Manoj | P2 | SK6, S4 |
-| M11 | | Reports API (KPIs, MRR, trend, aging) | Manoj | P3 | M10, SK5 |
-| M12 | | Dashboard UI | Manoj | P3 | M11, M4 |
-| M13 | | Customer portal (API + pages) | Manoj | P3 | M7, SK2, SK6, T2 |
-| M14 | | Integration, hardening, README, demo | Manoj | P4 | M12, M13, SK7, S8, T4 |
-| S1 | | Attributes and values | Sandhya | P1 | M2, M3, M4 |
-| S2 | | Products and variants API | Sandhya | P1 | S1 |
-| S3 | | Products UI + VariantPicker | Sandhya | P1 | S2, M4 |
-| S4 | | Taxes, payment terms, payment methods | Sandhya | P1 | M2, M3, M4 |
-| S5 | | Recurring plans | Sandhya | P1 | M2, M3, M4, S4 |
-| S6 | | Quotation templates | Sandhya | P1 | S3, S5 |
-| S7 | | Discount rules CRUD (admin only) | Sandhya | P2 | S2, M9 |
-| S8 | | Discount engine + tests | Sandhya | P2 | S7, M3 |
-| SK1 | | Subscriptions API | Shubham | P1 | M2, M3 |
-| SK2 | | Subscription state machine | Shubham | P1 | SK1, S5 |
-| SK3 | | Subscriptions UI | Shubham | P1 | SK1, SK2, M4, S3 |
-| SK4 | | Invoice generation service | Shubham | P2 | SK2, S8, T1 |
-| SK5 | | Billing run + scheduler | Shubham | P2 | SK4 |
-| SK6 | | Invoice API and actions | Shubham | P2 | SK4 |
-| SK7 | | Invoices UI | Shubham | P2 | SK6, M4, T2 |
-| T1 | | Billing period math | Trivedh | P1 | — |
-| T2 | | Printable invoice view | Trivedh | P2 | — |
-| T3 | | Email templates | Trivedh | P2 | — |
-| T4 | | Perf seed + report | Trivedh | P3 | M2 |
-| T5 | | Extra unit tests for helpers | Trivedh | P4 | M3, M5 |
+| M1 | [#1](https://github.com/manojk909/BillCycle/issues/1) | Scaffold server and client projects | Manoj | P0 | — |
+| M2 | [#2](https://github.com/manojk909/BillCycle/issues/2) | Prisma schema, migration, base seed | Manoj | P0 | M1 |
+| M3 | [#3](https://github.com/manojk909/BillCycle/issues/3) | Server core: errors, validation, pagination, sequences, money/tax, router stubs | Manoj | P0 | M1 |
+| M4 | [#4](https://github.com/manojk909/BillCycle/issues/4) | Client shell, routing, auth context, UI kit | Manoj | P0 | M1 |
+| M5 | [#5](https://github.com/manojk909/BillCycle/issues/5) | Auth API: signup, login, logout, me | Manoj | P1 | M2, M3 |
+| M6 | [#6](https://github.com/manojk909/BillCycle/issues/6) | Forgot / reset password + mailer | Manoj | P1 | M5 |
+| M7 | [#7](https://github.com/manojk909/BillCycle/issues/7) | RBAC middleware, portal scoping, users | Manoj | P1 | M5, M4 |
+| M8 | [#8](https://github.com/manojk909/BillCycle/issues/8) | Auth pages | Manoj | P1 | M4, M5, M6 |
+| M9 | [#9](https://github.com/manojk909/BillCycle/issues/9) | Customers API + UI | Manoj | P1 | M3, M4, M7 |
+| M10 | [#10](https://github.com/manojk909/BillCycle/issues/10) | Payments API + UI | Manoj | P2 | SK6, S4 |
+| M11 | [#11](https://github.com/manojk909/BillCycle/issues/11) | Reports API (KPIs, MRR, trend, aging) | Manoj | P3 | M10, SK5 |
+| M12 | [#12](https://github.com/manojk909/BillCycle/issues/12) | Dashboard UI | Manoj | P3 | M11, M4 |
+| M13 | [#13](https://github.com/manojk909/BillCycle/issues/13) | Customer portal (API + pages) | Manoj | P3 | M7, SK2, SK6, T2 |
+| M14 | [#14](https://github.com/manojk909/BillCycle/issues/14) | Integration, hardening, README, demo | Manoj | P4 | M12, M13, SK7, S8, T4 |
+| S1 | [#15](https://github.com/manojk909/BillCycle/issues/15) | Attributes and values | Sandhya | P1 | M2, M3, M4 |
+| S2 | [#16](https://github.com/manojk909/BillCycle/issues/16) | Products and variants API | Sandhya | P1 | S1 |
+| S3 | [#17](https://github.com/manojk909/BillCycle/issues/17) | Products UI + VariantPicker | Sandhya | P1 | S2, M4 |
+| S4 | [#18](https://github.com/manojk909/BillCycle/issues/18) | Taxes, payment terms, payment methods | Sandhya | P1 | M2, M3, M4 |
+| S5 | [#19](https://github.com/manojk909/BillCycle/issues/19) | Recurring plans | Sandhya | P1 | M2, M3, M4, S4 |
+| S6 | [#20](https://github.com/manojk909/BillCycle/issues/20) | Quotation templates | Sandhya | P1 | S3, S5 |
+| S7 | [#21](https://github.com/manojk909/BillCycle/issues/21) | Discount rules CRUD (admin only) | Sandhya | P2 | S2, M9 |
+| S8 | [#22](https://github.com/manojk909/BillCycle/issues/22) | Discount engine + tests | Sandhya | P2 | S7, M3 |
+| SK1 | [#23](https://github.com/manojk909/BillCycle/issues/23) | Subscriptions API | Shubham | P1 | M2, M3 |
+| SK2 | [#24](https://github.com/manojk909/BillCycle/issues/24) | Subscription state machine | Shubham | P1 | SK1, S5 |
+| SK3 | [#25](https://github.com/manojk909/BillCycle/issues/25) | Subscriptions UI | Shubham | P1 | SK1, SK2, M4, S3 |
+| SK4 | [#26](https://github.com/manojk909/BillCycle/issues/26) | Invoice generation service | Shubham | P2 | SK2, S8, T1 |
+| SK5 | [#27](https://github.com/manojk909/BillCycle/issues/27) | Billing run + scheduler | Shubham | P2 | SK4 |
+| SK6 | [#28](https://github.com/manojk909/BillCycle/issues/28) | Invoice API and actions | Shubham | P2 | SK4 |
+| SK7 | [#29](https://github.com/manojk909/BillCycle/issues/29) | Invoices UI | Shubham | P2 | SK6, M4, T2 |
+| T1 | [#30](https://github.com/manojk909/BillCycle/issues/30) | Billing period math | Trivedh | P1 | — |
+| T2 | [#31](https://github.com/manojk909/BillCycle/issues/31) | Printable invoice view | Trivedh | P2 | — |
+| T3 | [#32](https://github.com/manojk909/BillCycle/issues/32) | Email templates | Trivedh | P2 | — |
+| T4 | [#33](https://github.com/manojk909/BillCycle/issues/33) | Perf seed + report | Trivedh | P3 | M2 |
+| T5 | [#34](https://github.com/manojk909/BillCycle/issues/34) | Extra unit tests for helpers | Trivedh | P4 | M3, M5 |
 
 ## Dependency map
 

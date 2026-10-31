@@ -64,11 +64,19 @@ Hard constraints from the hackathon organisers:
 
 ## 6. Commands
 
-> Filled in once the scaffold (task M1) is merged.
-
 ```bash
-docker compose up -d          # postgres + mailpit (http://localhost:8025)
-cd server && npm i && npx prisma migrate dev && npm run seed && npm run dev
-cd client && npm i && npm run dev
-npm test                      # in server/ or client/
+docker compose up -d          # postgres on :5433 + mailpit (http://localhost:8025)
+cd server && cp .env.example .env && npm i && npx prisma migrate dev && npm run seed && npm run dev
+cd client && cp .env.example .env && npm i && npm run dev
+npm run typecheck && npm run lint && npm test     # in server/ (client: npm run build && npm run lint)
 ```
+
+### Where things are (server)
+- New endpoints go in your module's existing router file `server/src/modules/<m>/<m>.routes.ts` (already mounted in `src/routes.ts` behind `authenticate`; **don't edit routes.ts**). Add `<m>.schema.ts`, `<m>.controller.ts`, `<m>.service.ts` next to it. Reference implementation: `modules/auth/`.
+- Helpers: `lib/http-error.ts` (`notFound`, `conflict`, `unprocessable`…), `middleware/validate.ts` (`validate`, `zId`, `zDate`, `zMoney`, `zName`, `idParams`), `lib/pagination.ts`, `lib/money.ts`, `lib/tax.ts` (`computeLine`, `sumTotals`), `lib/sequence.ts` (`nextNumber`), `lib/activity.ts`, `lib/dates.ts`, `lib/mailer.ts`, `lib/scope.ts` (`customerScope`), `middleware/require-role.ts` (`staff`, `adminOnly`, `portalOnly`).
+- Express 5: async handlers can throw; errors reach `middleware/error-handler.ts` automatically.
+- Seed data: add your own file in `server/prisma/seed/` and call it from `prisma/seed.ts`.
+
+### Where things are (client)
+- Your pages go in `client/src/features/<f>/`; replace the placeholder in `routes.tsx` (already registered in the router; **don't edit `app/router.tsx`**).
+- Use `@/components/ui` (DataTable, Pagination, FormField, Modal, StateBadge, StatusBar, useToast…), `@/lib/api` (`api.get/post/patch/delete`, `ApiError`), `@/lib/form` (`applyServerErrors`), `@/lib/format`. See `/app/ui-kit` for every component.

@@ -20,8 +20,7 @@
 | 12:30–13:15 | Foundation #1–#4 on `main` (Manoj). Others prepare logic offline |
 | 13:15–15:15 | Build MVP slices in parallel. **Merge to `main` at least every hour** |
 | 15:15–15:45 | Integration: everyone merged, run the story, fix |
-| 15:45–16:30 | Remaining MVP + polish, then `later` items if everything works |
-| **16:30** | **Code freeze**: README, demo rehearsal, final push by 17:00 |
+| 15:45–17:00 | Remaining MVP + polish, then `later` items if everything works. No code freeze: keep merging, final push by 17:00 |
 
 ## MVP slice per issue
 | Issue | MVP slice (build this) | Later |
@@ -39,7 +38,7 @@
 | #11 M11 | `/reports/summary` (active subs, collected, outstanding, overdue amount + count, simple MRR) | trend, aging, by-plan |
 | #12 M12 | KPI cards + overdue table + date-range filter | charts, auto-refresh |
 | #13 M13 | Read-only portal: my subscriptions, my invoices (+ print) | pause/close/renew from portal, accept quote |
-| #14 M14 | README run steps, demo seed, rehearsal at 16:30 | — |
+| #14 M14 | README run steps, demo seed, demo rehearsal | — |
 | #15 S1 | Attributes + values with extra price (simple page) | — |
 | #16 S2 | Products CRUD + variants + `/products/variants/options` + `variantPrice` | archive, warnings |
 | #17 S3 | Product list + form + add variant with price preview + `VariantPicker` | — |

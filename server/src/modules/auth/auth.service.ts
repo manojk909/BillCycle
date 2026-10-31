@@ -48,6 +48,20 @@ export async function getMe(userId: number) {
   return user;
 }
 
+export async function changePassword(userId: number, currentPassword: string, newPassword: string) {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user || !user.isActive) throw unauthorized();
+  if (!(await bcrypt.compare(currentPassword, user.passwordHash))) {
+    throw new HttpError(422, 'VALIDATION_ERROR', 'Current password is incorrect', {
+      currentPassword: 'Current password is incorrect',
+    });
+  }
+  await prisma.user.update({
+    where: { id: userId },
+    data: { passwordHash: await hashPassword(newPassword) },
+  });
+}
+
 const hashToken = (token: string) => crypto.createHash('sha256').update(token).digest('hex');
 
 /** Creates a single-use reset token and emails the link. Silent when the email is unknown. */

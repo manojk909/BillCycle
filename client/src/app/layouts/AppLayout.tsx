@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { LogOut, Menu, X } from 'lucide-react'
+import { KeyRound, LogOut, Menu, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { Badge } from '@/components/ui'
+import { ChangePasswordModal } from '@/features/auth/components/ChangePasswordModal'
 import { useAuth } from '../auth-context'
 import { navForRole } from '../nav'
 import { Brand } from './Brand'
@@ -11,6 +12,7 @@ export function AppLayout() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
+  const [changingPassword, setChangingPassword] = useState(false)
 
   if (!user) return null
   const sections = navForRole(user.role)
@@ -78,6 +80,15 @@ export function AppLayout() {
             <Badge tone={user.role === 'ADMIN' ? 'primary' : 'info'}>{user.role === 'ADMIN' ? 'Admin' : 'Staff'}</Badge>
             <button
               type="button"
+              onClick={() => setChangingPassword(true)}
+              className="rounded-md p-1.5 text-gray-600 hover:bg-gray-100"
+              aria-label="Change password"
+              title="Change password"
+            >
+              <KeyRound className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
               onClick={handleLogout}
               className="inline-flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm text-gray-600 hover:bg-gray-100"
             >
@@ -90,6 +101,7 @@ export function AppLayout() {
           <Outlet />
         </main>
       </div>
+      <ChangePasswordModal open={changingPassword} onClose={() => setChangingPassword(false)} />
     </div>
   )
 }

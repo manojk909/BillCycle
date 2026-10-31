@@ -23,6 +23,11 @@ export async function me(req: Request, res: Response) {
   res.json({ data: await authService.getMe(currentUser(req).id) });
 }
 
+export async function changePassword(req: Request, res: Response) {
+  await authService.changePassword(currentUser(req).id, req.body.currentPassword, req.body.newPassword);
+  res.json({ data: { message: 'Password changed' } });
+}
+
 export async function forgotPassword(req: Request, res: Response) {
   await authService.requestPasswordReset(req.body.email);
   res.json({ data: { message: 'If an account exists for this email, a reset link has been sent.' } });

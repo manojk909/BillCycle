@@ -44,4 +44,16 @@ export const resetPasswordSchema = z.object({
   password: passwordSchema,
 });
 
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z
+      .string({ required_error: 'Enter your current password' })
+      .min(1, 'Enter your current password'),
+    newPassword: passwordSchema,
+  })
+  .refine((v) => v.currentPassword !== v.newPassword, {
+    path: ['newPassword'],
+    message: 'New password must be different from the current one',
+  });
+
 export type SignupInput = z.infer<typeof signupSchema>;

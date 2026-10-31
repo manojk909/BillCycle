@@ -1,0 +1,526 @@
+// BillCycle database schema. Source of truth for fields: docs/03-domain-model.md
+// Owner: Manoj (M2). Changes go in their own small PR and the team is told.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- Enums ----------
+
+enum Role {
+  ADMIN
+  INTERNAL
+  PORTAL
+}
+
+enum ProductType {
+  SERVICE
+  GOODS
+}
+
+enum BillingPeriod {
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
+
+enum TaxType {
+  PERCENT
+  FIXED
+}
+
+enum DiscountType {
+  PERCENT
+  FIXED
+}
+
+enum DiscountScope {
+  PRODUCTS
+  SUBSCRIPTION
+}
+
+enum SubscriptionState {
+  DRAFT
+  QUOTATION
+  CONFIRMED
+  ACTIVE
+  PAUSED
+  CLOSED
+}
+
+enum InvoiceState {
+  DRAFT
+  CONFIRMED
+  PAID
+  CANCELLED
+}
+
+// ---------- Users & customers ----------
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique // always stored lowercased
+  passwordHash String   @map("password_hash")
+  name         String
+  role         Role
+  isActive     Boolean  @default(true) @map("is_active")
+  customerId   Int?     @unique @map("customer_id")
+  createdById  Int?     @map("created_by_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  customer           Customer?            @relation(fields: [customerId], references: [id])
+  createdBy          User?                @relation("UserCreatedBy", fields: [createdById], references: [id])
+  createdUsers       User[]               @relation("UserCreatedBy")
+  resetTokens        PasswordResetToken[]
+  salesSubscriptions Subscription[]       @relation("Salesperson")
+  paymentsRecorded   Payment[]
+  billingRuns        BillingRun[]
+  activities         ActivityLog[]
+
+  @@index([role])
+  @@map("users")
+}
+
+model PasswordResetToken {
+  id        Int       @id @default(autoincrement())
+  userId    Int       @map("user_id")
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("password_reset_tokens")
+}
+
+model Customer {
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String
+  phone       String?
+  companyName String?  @map("company_name")
+  street      String?
+  city        String?
+  state       String?
+  zip         String?
+  country     String?
+  taxId       String?  @map("tax_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user          User?
+  subscriptions Subscription[]
+  invoices      Invoice[]
+  discounts     DiscountRule[] @relation("DiscountCustomers")
+
+  @@index([name])
+  @@index([email])
+  @@map("customers")
+}
+
+// ---------- Catalog ----------
+
+model ProductAttribute {
+  id        Int              @id @default(autoincrement())
+  name      String           @unique
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
+  values    AttributeValue[]
+
+  @@map("product_attributes")
+}
+
+model AttributeValue {
+  id          Int      @id @default(autoincrement())
+  attributeId Int      @map("attribute_id")
+  name        String
+  extraPrice  Decimal  @default(0) @map("extra_price") @db.Decimal(12, 2)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  attribute ProductAttribute @relation(fields: [attributeId], references: [id], onDelete: Cascade)
+  variants  ProductVariant[] @relation("VariantValues")
+
+  @@unique([attributeId, name])
+  @@map("attribute_values")
+}
+
+model Product {
+  id         Int         @id @default(autoincrement())
+  name       String
+  type       ProductType @default(SERVICE)
+  salesPrice Decimal     @map("sales_price") @db.Decimal(12, 2)
+  costPrice  Decimal     @default(0) @map("cost_price") @db.Decimal(12, 2)
+  notes      String?
+  isActive   Boolean     @default(true) @map("is_active")
+  createdAt  DateTime    @default(now()) @map("created_at")
+  updatedAt  DateTime    @updatedAt @map("updated_at")
+
+  taxes     Tax[]            @relation("ProductTaxes")
+  variants  ProductVariant[]
+  discounts DiscountRule[]   @relation("DiscountProducts")
+
+  @@index([name])
+  @@map("products")
+}
+
+// Price is computed: product.salesPrice + sum(values.extraPrice). Never stored.
+model ProductVariant {
+  id        Int      @id @default(autoincrement())
+  productId Int      @map("product_id")
+  sku       String?  @unique
+  isDefault Boolean  @default(false) @map("is_default")
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  product           Product                 @relation(fields: [productId], references: [id], onDelete: Cascade)
+  values            AttributeValue[]        @relation("VariantValues")
+  templateLines     QuotationTemplateLine[]
+  subscriptionLines SubscriptionLine[]
+  invoiceLines      InvoiceLine[]
+
+  @@index([productId])
+  @@map("product_variants")
+}
+
+// ---------- Configuration ----------
+
+model Tax {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  type      TaxType  @default(PERCENT)
+  rate      Decimal  @db.Decimal(7, 4)
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  products          Product[]          @relation("ProductTaxes")
+  plans             RecurringPlan[]    @relation("PlanTaxes")
+  subscriptionLines SubscriptionLine[] @relation("SubscriptionLineTaxes")
+  invoiceLines      InvoiceLine[]      @relation("InvoiceLineTaxes")
+
+  @@map("taxes")
+}
+
+model PaymentTerm {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  dueDays   Int      @default(0) @map("due_days")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  subscriptions Subscription[]
+
+  @@map("payment_terms")
+}
+
+model PaymentMethod {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  payments Payment[]
+
+  @@map("payment_methods")
+}
+
+// ---------- Plans & templates ----------
+
+model RecurringPlan {
+  id              Int           @id @default(autoincrement())
+  name            String
+  price           Decimal       @db.Decimal(12, 2) // base fee, billed as the plan line (docs/07 A3)
+  billingPeriod   BillingPeriod @map("billing_period")
+  billingInterval Int           @default(1) @map("billing_interval")
+  minQuantity     Int           @default(1) @map("min_quantity")
+  startDate       DateTime?     @map("start_date") @db.Date
+  endDate         DateTime?     @map("end_date") @db.Date
+  autoClose       Boolean       @default(false) @map("auto_close")
+  closable        Boolean       @default(true)
+  pausable        Boolean       @default(false)
+  renewable       Boolean       @default(true)
+  isActive        Boolean       @default(true) @map("is_active")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  taxes         Tax[]               @relation("PlanTaxes")
+  templates     QuotationTemplate[]
+  subscriptions Subscription[]
+
+  @@map("recurring_plans")
+}
+
+model QuotationTemplate {
+  id           Int      @id @default(autoincrement())
+  name         String
+  validityDays Int      @default(30) @map("validity_days")
+  planId       Int      @map("plan_id")
+  notes        String?
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  plan          RecurringPlan           @relation(fields: [planId], references: [id])
+  lines         QuotationTemplateLine[]
+  subscriptions Subscription[]
+
+  @@map("quotation_templates")
+}
+
+model QuotationTemplateLine {
+  id          Int     @id @default(autoincrement())
+  templateId  Int     @map("template_id")
+  variantId   Int     @map("variant_id")
+  quantity    Int     @default(1)
+  description String?
+
+  template QuotationTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  variant  ProductVariant    @relation(fields: [variantId], references: [id])
+
+  @@map("quotation_template_lines")
+}
+
+// ---------- Subscriptions ----------
+
+model Subscription {
+  id                  Int               @id @default(autoincrement())
+  number              String?           @unique // SUB/2026/00001
+  customerId          Int               @map("customer_id")
+  planId              Int               @map("plan_id")
+  templateId          Int?              @map("template_id")
+  paymentTermId       Int               @map("payment_term_id")
+  salespersonId       Int?              @map("salesperson_id")
+  state               SubscriptionState @default(DRAFT)
+  quantity            Int               @default(1) // plan seats, >= plan.minQuantity
+  startDate           DateTime          @map("start_date") @db.Date
+  expiryDate          DateTime?         @map("expiry_date") @db.Date
+  quotationValidUntil DateTime?         @map("quotation_valid_until") @db.Date
+  nextInvoiceDate     DateTime?         @map("next_invoice_date") @db.Date
+  pausedAt            DateTime?         @map("paused_at")
+  closedAt            DateTime?         @map("closed_at")
+  closeReason         String?           @map("close_reason")
+  renewedFromId       Int?              @map("renewed_from_id")
+  amountUntaxed       Decimal           @default(0) @map("amount_untaxed") @db.Decimal(12, 2)
+  amountTax           Decimal           @default(0) @map("amount_tax") @db.Decimal(12, 2)
+  amountTotal         Decimal           @default(0) @map("amount_total") @db.Decimal(12, 2)
+  createdAt           DateTime          @default(now()) @map("created_at")
+  updatedAt           DateTime          @updatedAt @map("updated_at")
+
+  customer      Customer           @relation(fields: [customerId], references: [id])
+  plan          RecurringPlan      @relation(fields: [planId], references: [id])
+  template      QuotationTemplate? @relation(fields: [templateId], references: [id])
+  paymentTerm   PaymentTerm        @relation(fields: [paymentTermId], references: [id])
+  salesperson   User?              @relation("Salesperson", fields: [salespersonId], references: [id])
+  renewedFrom   Subscription?      @relation("Renewal", fields: [renewedFromId], references: [id])
+  renewals      Subscription[]     @relation("Renewal")
+  lines         SubscriptionLine[]
+  invoices      Invoice[]
+  discountUsage DiscountUsage[]
+
+  @@index([state])
+  @@index([customerId])
+  @@index([planId])
+  @@index([nextInvoiceDate, state])
+  @@map("subscriptions")
+}
+
+model SubscriptionLine {
+  id             Int     @id @default(autoincrement())
+  subscriptionId Int     @map("subscription_id")
+  variantId      Int?    @map("variant_id") // null only for the plan line
+  isPlanLine     Boolean @default(false) @map("is_plan_line")
+  description    String
+  quantity       Int     @default(1)
+  unitPrice      Decimal @map("unit_price") @db.Decimal(12, 2)
+  isActive       Boolean @default(true) @map("is_active") // add-on on/off
+  amountUntaxed  Decimal @default(0) @map("amount_untaxed") @db.Decimal(12, 2)
+  amountTax      Decimal @default(0) @map("amount_tax") @db.Decimal(12, 2)
+  amountTotal    Decimal @default(0) @map("amount_total") @db.Decimal(12, 2)
+
+  subscription Subscription    @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  variant      ProductVariant? @relation(fields: [variantId], references: [id])
+  taxes        Tax[]           @relation("SubscriptionLineTaxes")
+
+  @@index([subscriptionId])
+  @@map("subscription_lines")
+}
+
+// ---------- Invoicing ----------
+
+model Invoice {
+  id             Int          @id @default(autoincrement())
+  number         String?      @unique // INV/2026/00001, assigned on confirm
+  subscriptionId Int          @map("subscription_id")
+  customerId     Int          @map("customer_id")
+  state          InvoiceState @default(DRAFT)
+  periodStart    DateTime     @map("period_start") @db.Date
+  periodEnd      DateTime     @map("period_end") @db.Date
+  invoiceDate    DateTime     @map("invoice_date") @db.Date
+  dueDate        DateTime     @map("due_date") @db.Date
+  billingName    String       @map("billing_name")
+  billingEmail   String       @map("billing_email")
+  billingAddress String?      @map("billing_address")
+  amountUntaxed  Decimal      @default(0) @map("amount_untaxed") @db.Decimal(12, 2)
+  amountDiscount Decimal      @default(0) @map("amount_discount") @db.Decimal(12, 2)
+  amountTax      Decimal      @default(0) @map("amount_tax") @db.Decimal(12, 2)
+  amountTotal    Decimal      @default(0) @map("amount_total") @db.Decimal(12, 2)
+  amountPaid     Decimal      @default(0) @map("amount_paid") @db.Decimal(12, 2)
+  amountDue      Decimal      @default(0) @map("amount_due") @db.Decimal(12, 2)
+  sentAt         DateTime?    @map("sent_at")
+  confirmedAt    DateTime?    @map("confirmed_at")
+  cancelledAt    DateTime?    @map("cancelled_at")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  subscription  Subscription    @relation(fields: [subscriptionId], references: [id])
+  customer      Customer        @relation(fields: [customerId], references: [id])
+  lines         InvoiceLine[]
+  payments      Payment[]
+  discountUsage DiscountUsage[]
+
+  // Partial unique index (subscription_id, period_start) WHERE state <> 'CANCELLED'
+  // lives in the migration SQL: the "never bill twice" guarantee.
+  @@index([state, dueDate])
+  @@index([customerId])
+  @@index([subscriptionId])
+  @@index([invoiceDate])
+  @@map("invoices")
+}
+
+model InvoiceLine {
+  id             Int     @id @default(autoincrement())
+  invoiceId      Int     @map("invoice_id")
+  variantId      Int?    @map("variant_id")
+  isPlanLine     Boolean @default(false) @map("is_plan_line")
+  description    String
+  quantity       Int
+  unitPrice      Decimal @map("unit_price") @db.Decimal(12, 2)
+  discountAmount Decimal @default(0) @map("discount_amount") @db.Decimal(12, 2)
+  amountUntaxed  Decimal @map("amount_untaxed") @db.Decimal(12, 2)
+  amountTax      Decimal @map("amount_tax") @db.Decimal(12, 2)
+  amountTotal    Decimal @map("amount_total") @db.Decimal(12, 2)
+
+  invoice Invoice         @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  variant ProductVariant? @relation(fields: [variantId], references: [id])
+  taxes   Tax[]           @relation("InvoiceLineTaxes")
+
+  @@index([invoiceId])
+  @@map("invoice_lines")
+}
+
+// ---------- Discounts ----------
+
+model DiscountRule {
+  id                Int           @id @default(autoincrement())
+  name              String
+  code              String?       @unique
+  type              DiscountType
+  value             Decimal       @db.Decimal(12, 2)
+  scope             DiscountScope
+  minPurchaseAmount Decimal?      @map("min_purchase_amount") @db.Decimal(12, 2)
+  minQuantity       Int?          @map("min_quantity")
+  startDate         DateTime      @map("start_date") @db.Date
+  endDate           DateTime      @map("end_date") @db.Date
+  usageLimit        Int?          @map("usage_limit") // null = unlimited
+  timesUsed         Int           @default(0) @map("times_used")
+  isActive          Boolean       @default(true) @map("is_active")
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+
+  products  Product[]       @relation("DiscountProducts")
+  customers Customer[]      @relation("DiscountCustomers") // empty = all customers
+  usages    DiscountUsage[]
+
+  @@index([isActive, startDate, endDate])
+  @@map("discount_rules")
+}
+
+model DiscountUsage {
+  id             Int      @id @default(autoincrement())
+  discountId     Int      @map("discount_id")
+  invoiceId      Int      @map("invoice_id")
+  subscriptionId Int      @map("subscription_id")
+  amount         Decimal  @db.Decimal(12, 2)
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  discount     DiscountRule @relation(fields: [discountId], references: [id])
+  invoice      Invoice      @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  subscription Subscription @relation(fields: [subscriptionId], references: [id])
+
+  @@unique([discountId, invoiceId])
+  @@map("discount_usages")
+}
+
+// ---------- Payments ----------
+
+model Payment {
+  id           Int      @id @default(autoincrement())
+  invoiceId    Int      @map("invoice_id")
+  methodId     Int      @map("method_id")
+  amount       Decimal  @db.Decimal(12, 2)
+  date         DateTime @db.Date
+  note         String?
+  recordedById Int?     @map("recorded_by_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  invoice    Invoice       @relation(fields: [invoiceId], references: [id])
+  method     PaymentMethod @relation(fields: [methodId], references: [id])
+  recordedBy User?         @relation(fields: [recordedById], references: [id])
+
+  @@index([invoiceId])
+  @@index([date])
+  @@map("payments")
+}
+
+// ---------- System ----------
+
+model Sequence {
+  code      String
+  year      Int
+  nextValue Int    @default(1) @map("next_value")
+
+  @@id([code, year])
+  @@map("sequences")
+}
+
+model BillingRun {
+  id            Int       @id @default(autoincrement())
+  upTo          DateTime  @map("up_to") @db.Date
+  startedAt     DateTime  @default(now()) @map("started_at")
+  finishedAt    DateTime? @map("finished_at")
+  created       Int       @default(0)
+  skipped       Int       @default(0)
+  failed        Int       @default(0)
+  errors        Json      @default("[]")
+  triggeredById Int?      @map("triggered_by_id")
+
+  triggeredBy User? @relation(fields: [triggeredById], references: [id])
+
+  @@map("billing_runs")
+}
+
+model ActivityLog {
+  id         Int      @id @default(autoincrement())
+  entityType String   @map("entity_type")
+  entityId   Int      @map("entity_id")
+  action     String
+  message    String
+  userId     Int?     @map("user_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([entityType, entityId])
+  @@map("activity_logs")
+}

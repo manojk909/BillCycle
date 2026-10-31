@@ -1,12 +1,15 @@
 import type { RouteObject } from 'react-router-dom'
 import { RequireRole } from '@/app/guards'
-import { ComingSoon } from '@/components/ComingSoon'
+import { UsersPage } from './pages/UsersPage'
 
-// Replace the placeholders with real pages. Paths are relative to /app.
+// Paths are relative to /app. Admin only (server enforces it too).
 export const userRoutes: RouteObject[] = [
-  { path: 'users', element: (
+  {
+    path: 'users',
+    element: (
       <RequireRole roles={['ADMIN']}>
-        <ComingSoon title="Users" owner="Manoj" task="M7" />
+        <UsersPage />
       </RequireRole>
-    ) },
+    ),
+  },
 ]

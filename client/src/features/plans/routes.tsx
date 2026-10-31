@@ -1,7 +1,10 @@
 import type { RouteObject } from 'react-router-dom'
-import { ComingSoon } from '@/components/ComingSoon'
+import { PlansListPage } from './pages/PlansListPage'
+import { PlanFormPage } from './pages/PlanFormPage'
 
-// Replace the placeholders with real pages. Paths are relative to /app.
+// Paths are relative to /app. Staff can view plans; only admins see edit actions.
 export const planRoutes: RouteObject[] = [
-  { path: 'plans', element: <ComingSoon title="Recurring plans" owner="Sandhya" task="S5" /> },
+  { path: 'plans', element: <PlansListPage /> },
+  { path: 'plans/new', element: <PlanFormPage /> },
+  { path: 'plans/:id', element: <PlanFormPage /> },
 ]

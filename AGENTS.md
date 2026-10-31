@@ -21,7 +21,8 @@ Read these before making changes:
 - `docs/04-business-rules.md`: billing, tax, discount and payment logic
 - `docs/05-roles-permissions.md`: Admin / Internal / Portal access
 - `docs/09-execution-plan.md`: stack, folder layout, API contracts, git workflow
-- `docs/10-task-distribution.md`: who owns which module. **Don't edit another member's module** unless that person asked you to.
+- `docs/10-task-distribution.md`: who owns which module, the dependency map and the handoff contracts. **Don't edit another member's module** unless that person asked you to.
+- `docs/tasks/<ID>-*.md`: **the spec for each task / GitHub issue** (`[M2]`, `[SK4]`…). When a human says "work on issue #N" or "task SK4", read `docs/tasks/README.md` and that spec first, and follow its Build list and Acceptance criteria exactly.
 
 ## 3. Stack
 

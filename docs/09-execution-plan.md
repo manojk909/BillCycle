@@ -124,7 +124,7 @@ The hackathon length isn't fixed here. Treat these as **ordered checkpoints**. A
 ## 8. Demo split (everyone presents)
 | Part | Presenter |
 |---|---|
-| Intro, architecture, **DB schema walkthrough**, auth + roles, payments, dashboard + performance proof | Manoj |
-| Catalog (product variants, Odoo +560), plans, taxes, **discount rules**, quotation templates, customer portal | Sandhya |
+| Intro, architecture, **DB schema walkthrough**, auth + roles, customers, payments, dashboard + performance proof, customer portal | Manoj |
+| Catalog (product variants, Odoo +560), plans, taxes, **discount rules + engine**, quotation templates | Sandhya |
 | Subscription lifecycle, **billing run + no-double-billing proof**, invoice confirm/send/print | Shubham |
 | Billing-period math and unit tests, printable invoice, email templates, 10k-row perf seed | Trivedh |

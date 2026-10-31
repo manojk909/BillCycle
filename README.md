@@ -6,8 +6,8 @@ Built for the **Odoo x Flux Hackathon** (problem statement: *Subscription Manage
 ## Team
 | Member | Area |
 |---|---|
-| Manoj Kharkar | Foundation, DB schema, auth & roles, payments, dashboard |
-| Sandhya Parmar | Catalog, plans, taxes, discounts, quotation templates, customers, customer portal |
+| Manoj Kharkar | Foundation, DB schema, auth & roles, customers, payments, dashboard, customer portal |
+| Sandhya Parmar | Catalog, plans, taxes, discounts, quotation templates |
 | Shubham Kang | Subscriptions, invoicing, billing run, scheduler |
 | Challa Trivedh Kumar | Billing-period engine, invoice print view, email templates, performance seed |
 

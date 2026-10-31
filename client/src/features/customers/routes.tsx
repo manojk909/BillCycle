@@ -1,7 +1,10 @@
 import type { RouteObject } from 'react-router-dom'
-import { ComingSoon } from '@/components/ComingSoon'
+import { CustomersListPage } from './pages/CustomersListPage'
+import { CustomerFormPage } from './pages/CustomerFormPage'
 
-// Replace the placeholders with real pages. Paths are relative to /app.
+// Paths are relative to /app.
 export const customerRoutes: RouteObject[] = [
-  { path: 'customers', element: <ComingSoon title="Customers" owner="Manoj" task="M9" /> },
+  { path: 'customers', element: <CustomersListPage /> },
+  { path: 'customers/new', element: <CustomerFormPage /> },
+  { path: 'customers/:id', element: <CustomerFormPage /> },
 ]

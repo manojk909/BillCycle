@@ -7,6 +7,7 @@ import { nextNumber } from '../../lib/sequence';
 import { logActivity } from '../../lib/activity';
 import { toDateOnly, addDays } from '../../lib/dates';
 import { recomputeSubscription } from './subscriptions.totals';
+import { getAllowedActions } from './subscription-actions';
 import type { CreateBody, FromTemplateBody, ListQuery, UpdateBody } from './subscriptions.schema';
 
 type Actor = { id?: number | null };
@@ -36,24 +37,6 @@ function isPlanAvailable(
   if (plan.startDate && d < toDateOnly(plan.startDate)) return false;
   if (plan.endDate && d > toDateOnly(plan.endDate)) return false;
   return true;
-}
-
-// Minimal allowed-actions until SK2 ships getAllowedActions; SK2 supersedes this.
-function allowedActions(state: string): string[] {
-  switch (state) {
-    case 'DRAFT':
-      return ['send', 'confirm', 'cancel'];
-    case 'QUOTATION':
-      return ['confirm', 'cancel'];
-    case 'CONFIRMED':
-      return ['activate'];
-    case 'ACTIVE':
-      return ['pause', 'renew', 'close'];
-    case 'PAUSED':
-      return ['resume', 'renew', 'close'];
-    default:
-      return [];
-  }
 }
 
 // ---- Queries ----
@@ -107,7 +90,7 @@ export async function getSubscription(id: number) {
     },
   });
   if (!sub) throw notFound('Subscription');
-  return { ...sub, invoiceCount: sub._count.invoices, allowedActions: allowedActions(sub.state) };
+  return { ...sub, invoiceCount: sub._count.invoices, allowedActions: getAllowedActions(sub, sub.plan, 'ADMIN') };
 }
 
 export function getActivity(id: number) {
@@ -367,5 +350,5 @@ async function getSubscriptionInTx(tx: Tx, id: number) {
     },
   });
   if (!sub) throw notFound('Subscription');
-  return { ...sub, invoiceCount: sub._count.invoices, allowedActions: allowedActions(sub.state) };
+  return { ...sub, invoiceCount: sub._count.invoices, allowedActions: getAllowedActions(sub, sub.plan, 'ADMIN') };
 }

@@ -61,3 +61,5 @@ export const updateBody = z.object({
   lines: z.array(updateLine).optional(),
 });
 export type UpdateBody = z.infer<typeof updateBody>;
+
+export const actionBody = z.object({ reason: z.string().trim().max(240).optional() });

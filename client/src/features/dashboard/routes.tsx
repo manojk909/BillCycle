@@ -1,7 +1,5 @@
 import type { RouteObject } from 'react-router-dom'
-import { ComingSoon } from '@/components/ComingSoon'
+import { DashboardPage } from './pages/DashboardPage'
 
-// Replace the placeholders with real pages. Paths are relative to /app.
-export const dashboardRoutes: RouteObject[] = [
-  { path: 'dashboard', element: <ComingSoon title="Dashboard" owner="Manoj" task="M12" /> },
-]
+// Paths are relative to /app.
+export const dashboardRoutes: RouteObject[] = [{ path: 'dashboard', element: <DashboardPage /> }]

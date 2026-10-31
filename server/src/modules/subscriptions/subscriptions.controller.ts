@@ -58,3 +58,11 @@ export const resume = makeAction('resume');
 export const renew = makeAction('renew');
 export const close = makeAction('close');
 export const cancel = makeAction('cancel');
+
+// SK4: manual "Create invoice" for the subscription's current nextInvoiceDate.
+import { generateCurrentInvoice } from '../invoices/invoice-generator';
+
+export async function generateInvoice(req: Request, res: Response) {
+  const result = await generateCurrentInvoice(id(req));
+  res.status(result.status === 'created' ? 201 : 200).json({ data: result });
+}

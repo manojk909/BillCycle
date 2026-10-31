@@ -1,8 +1,13 @@
 import type { RouteObject } from 'react-router-dom'
-import { ComingSoon } from '@/components/ComingSoon'
+import { InvoicesListPage } from './pages/InvoicesListPage'
+import { InvoiceDetailPage } from './pages/InvoiceDetailPage'
+import { InvoicePrintPage } from './pages/InvoicePrintPage'
+import { BillingRunPage } from './pages/BillingRunPage'
 
-// Replace the placeholders with real pages. Paths are relative to /app.
+// Paths are relative to /app.
 export const invoiceRoutes: RouteObject[] = [
-  { path: 'invoices', element: <ComingSoon title="Invoices" owner="Shubham" task="SK7" /> },
-  { path: 'billing', element: <ComingSoon title="Run billing" owner="Shubham" task="SK5" /> },
+  { path: 'invoices', element: <InvoicesListPage /> },
+  { path: 'invoices/:id', element: <InvoiceDetailPage /> },
+  { path: 'invoices/:id/print', element: <InvoicePrintPage /> },
+  { path: 'billing', element: <BillingRunPage /> },
 ]

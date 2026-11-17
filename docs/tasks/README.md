@@ -2,7 +2,7 @@
 
 Every GitHub issue has a matching spec file here (`<ID>-<slug>.md`). The spec is the **source of truth** for the task. The issue body is a copy of it.
 
-> **TODAY: deadline 17:00, code freeze 16:30.** Build only the MVP slice of your task from [MVP.md](MVP.md) first. Issues labelled `later` wait until the end-to-end story works.
+> **TODAY: deadline 17:00, no code freeze. Keep merging until the deadline.** Build only the MVP slice of your task from [MVP.md](MVP.md) first. Issues labelled `later` wait until the end-to-end story works.
 
 ## If you are an AI assistant helping a team member
 0. Read `docs/tasks/MVP.md` and build only the MVP slice for the task.
